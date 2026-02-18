@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import User, Resource, Booking
+from .models import User, Resource, Booking, UserActivity
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -80,3 +80,12 @@ class BookingStatusSerializer(serializers.ModelSerializer):
         if value not in ['APPROVED', 'REJECTED']:
             raise serializers.ValidationError("Status can only be updated to APPROVED or REJECTED.")
         return value
+
+class UserActivitySerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(source='user.name', read_only=True)
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    user_role = serializers.CharField(source='user.role', read_only=True)
+
+    class Meta:
+        model = UserActivity
+        fields = ['id', 'user_name', 'user_email', 'user_role', 'login_time', 'logout_time']

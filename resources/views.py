@@ -2,12 +2,60 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import User, Resource, Booking
-from .serializers import UserSerializer, ResourceSerializer, BookingSerializer, BookingStatusSerializer, CustomTokenObtainPairSerializer
+from .models import User, Resource, Booking, UserActivity
+from .serializers import (
+    UserSerializer, ResourceSerializer, BookingSerializer, 
+    BookingStatusSerializer, CustomTokenObtainPairSerializer, 
+    UserActivitySerializer
+)
 from .permissions import IsStaffOrReadOnly, IsOwnerOrStaff
+from rest_framework.views import APIView
+from django.utils import timezone
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            # Log successful login
+            try:
+                # Get user based on email provided in request
+                email = request.data.get('email')
+                user = User.objects.get(email=email)
+                UserActivity.objects.create(user=user)
+            except User.DoesNotExist:
+                pass # Should not happen if token is generated
+        return response
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # Find the most recent login activity for this user that hasn't been logged out
+            # We filter by user and null logout_time, getting the latest one created
+            activity = UserActivity.objects.filter(
+                user=request.user, 
+                logout_time__isnull=True
+            ).order_by('-login_time').first()
+
+            if activity:
+                activity.logout_time = timezone.now()
+                activity.save()
+            
+            return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = UserActivity.objects.all()
+    serializer_class = UserActivitySerializer
+    permission_classes = [permissions.IsAdminUser] # Only Admin/Staff can see logs
+
+    def get_queryset(self):
+        # Optional: Filter by user role if needed, or recent logs
+        return UserActivity.objects.all().order_by('-login_time')
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

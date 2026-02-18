@@ -100,3 +100,15 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.resource.name} - {self.booking_date} ({self.time_slot})"
+
+class UserActivity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    login_time = models.DateTimeField(auto_now_add=True)
+    logout_time = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'UserActivity'
+        ordering = ['-login_time']
+
+    def __str__(self):
+        return f"{self.user.email} - {self.login_time}"

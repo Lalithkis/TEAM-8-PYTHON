@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,6 +10,35 @@ const Header = ({ toggleSidebar }) => {
     logout();
     navigate('/login');
   };
+
+  const [timeLeft, setTimeLeft] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      const role = user.role?.toUpperCase();
+      if (role === 'STUDENT' || role === 'STAFF') {
+        const start = parseInt(localStorage.getItem('sessionStart') || '0', 10);
+        const duration = 15 * 60 * 1000;
+
+        const timer = setInterval(() => {
+          const now = Date.now();
+          const remaining = duration - (now - start);
+
+          if (remaining <= 0) {
+            setTimeLeft('00:00');
+            clearInterval(timer);
+            // AuthContext handles actual logout
+          } else {
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            setTimeLeft(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
+          }
+        }, 1000);
+
+        return () => clearInterval(timer);
+      }
+    }
+  }, [user]);
 
   return (
     <header className="bg-white shadow-sm">
@@ -32,8 +61,18 @@ const Header = ({ toggleSidebar }) => {
           </div>
         </div>
 
-        {/* Right Side: User Profile + Logout */}
+        {/* Right Side: Timer + User Profile + Logout */}
         <div className="flex items-center space-x-4">
+          {/* Session Timer */}
+          {timeLeft && (
+            <div className="hidden md:flex bg-red-50 px-3 py-1 rounded-full border border-red-100 items-center">
+              <svg className="w-4 h-4 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm font-medium text-red-600 font-mono">{timeLeft}</span>
+            </div>
+          )}
+
           <div className="text-right hidden sm:block">
             <p className="text-sm font-medium text-gray-700">{user?.name}</p>
             <p className="text-xs text-gray-500">{user?.email}</p>

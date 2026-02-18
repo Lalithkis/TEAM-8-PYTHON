@@ -22,7 +22,10 @@ api.interceptors.request.use(
 
 export const authAPI = {
   login: (credentials) => api.post('/auth/login/', credentials),
-  logout: () => api.post('/auth/logout/'),
+  logout: () => api.post('/auth/logout/'), // Added logout call
+};
+export const userActivityAPI = {
+  getAll: () => api.get('/user-activity/'),
 };
 
 export const usersAPI = {
