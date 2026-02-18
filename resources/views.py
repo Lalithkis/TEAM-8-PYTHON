@@ -1,9 +1,13 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import User, Resource, Booking
-from .serializers import UserSerializer, ResourceSerializer, BookingSerializer, BookingStatusSerializer
+from .serializers import UserSerializer, ResourceSerializer, BookingSerializer, BookingStatusSerializer, CustomTokenObtainPairSerializer
 from .permissions import IsStaffOrReadOnly, IsOwnerOrStaff
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -42,10 +46,9 @@ class BookingViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrStaff]
 
     def get_queryset(self):
-        # Staff sees all bookings, Student sees only their own
-        if self.request.user.role == 'STAFF':
-            return Booking.objects.all()
-        return Booking.objects.filter(user=self.request.user)
+        # Allow all authenticated users to see all bookings
+        # This is necessary so Students can see if a resource is 'Booked' by others (Availability Check)
+        return Booking.objects.all()
 
     def perform_create(self, serializer):
         # Automatically assign the logged-in user to the booking

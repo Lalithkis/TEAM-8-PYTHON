@@ -1,5 +1,20 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User, Resource, Booking
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # Custom data to include in response
+        data['token'] = data['access']
+        data['user'] = {
+            'id': self.user.id,
+            'email': self.user.email,
+            'name': self.user.name,
+            'role': self.user.role,
+            'status': self.user.status,
+        }
+        return data
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,20 +54,20 @@ class BookingSerializer(serializers.ModelSerializer):
         time_slot = data.get('time_slot')
 
         # Check for conflicts excluding rejected bookings
-        # Note: If updating an existing booking, exclude self from check
-        qs = Booking.objects.filter(
-            resource=resource, 
-            booking_date=booking_date, 
-            time_slot=time_slot
-        ).exclude(status='REJECTED')
+        if resource and booking_date and time_slot:
+            qs = Booking.objects.filter(
+                resource=resource, 
+                booking_date=booking_date, 
+                time_slot=time_slot
+            ).exclude(status='REJECTED')
 
-        if self.instance:
-            qs = qs.exclude(pk=self.instance.pk)
+            if self.instance:
+                qs = qs.exclude(pk=self.instance.pk)
 
-        if qs.exists():
-            raise serializers.ValidationError({
-                "non_field_errors": ["This resource is already booked for the selected date and time slot."]
-            })
+            if qs.exists():
+                raise serializers.ValidationError({
+                    "non_field_errors": ["This resource is already booked for the selected date and time slot."]
+                })
         
         return data
 
