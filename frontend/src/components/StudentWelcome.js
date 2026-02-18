@@ -42,9 +42,9 @@ const StudentWelcome = ({ userName }) => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 p-4">
+    <div className="max-w-7xl mx-auto space-y-4 md:space-y-8 p-3 md:p-4">
       {/* Professional Header */}
-      <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center">
+      <div className="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
           <p className="text-gray-500 mt-2 text-lg">Welcome back, {userName}. Manage your campus activities.</p>
@@ -64,7 +64,7 @@ const StudentWelcome = ({ userName }) => {
       </div>
 
       {/* Quick Actions Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
         {quickActions.map((action, index) => (
           <Link
             key={index}
@@ -83,7 +83,7 @@ const StudentWelcome = ({ userName }) => {
       </div>
 
       {/* Information Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
             <span className="bg-blue-50 text-blue-600 p-2 rounded-lg mr-3">
