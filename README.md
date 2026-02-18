@@ -1,5 +1,8 @@
-
 # 🎓 Campus Resource Management System
+
+A web-based platform designed to simplify resource allocation for students and faculty. This system provides role-based access to book labs, lecture halls, and manage campus resources efficiently.
+
+---
 
 ## 🚀 Getting Started
 
@@ -57,6 +60,53 @@ Follow these steps to run the project.
     npm start
     ```
     The frontend will run at **http://localhost:3000/**
+
+---
+
+## ✨ Key Features
+
+### 📅 **Resource Booking**
+*   **Students & Staff**: Browse available labs and lecture halls.
+*   **Real-Time Availability**: Check if a resource is booked for a specific time slot.
+*   **Request System**: Submit booking requests for approval.
+
+### 👥 **Role-Based Access Control**
+*   **Student Dashboard**: View available resources and manage personal bookings.
+*   **Staff Dashboard**: Additional privileges to oversee departmental resources.
+*   **System Admin**: Full control over users, resources, and booking approvals.
+
+### 📱 **Responsive Design**
+*   **Mobile-First Approach**: Optimized layouts for smartphones and tablets.
+*   **Card View**: Bookings display as cards on mobile for better readability.
+*   **Sidebar Navigation**: Collapsible sidebar with hamburger menu for mobile users.
+
+### ⏱️ **Login Activity Monitoring**
+*   **Admin Feature**: Real-time tracking of user login and logout times.
+*   **Session Logs**: View login date, time, and session duration for all users.
+*   **Security**: Monitor active sessions to ensure system integrity.
+
+### ⏳ **Auto-Logout Session Timer**
+*   **15-Minute Limit**: Automatic session timeout for Students and Staff after 15 minutes of inactivity.
+*   **Visual Timer**: Countdown timer displayed in the header.
+*   **Security**: Prevents unauthorized access on shared devices.
+
+---
+
+## 📚 API Documentation
+
+For detailed API usage, refer to the **[Postman Guide](postman_guide.md)** included in the repository.
+
+*   **Authentication**: JWT (JSON Web Token) based login.
+*   **Endpoints**: Standard RESTful API structure for Users, Resources, and Bookings.
+
+---
+
+## 🛠️ Technology Stack
+
+*   **Frontend**: React.js, Tailwind CSS
+*   **Backend**: Django Rest Framework (DRF)
+*   **Database**: MySQL
+*   **Authentication**: Simple JWT
 
 ---
 
